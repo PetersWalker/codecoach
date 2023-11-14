@@ -5,16 +5,27 @@ import (
 	"os/exec"
 	"fmt"
 	"os"
+	"strings"
+	// "bytes"
 )
 
 func main() {
-	executeArgs(os.Args)
+	args := os.Args
+
+	
+	if len(args) < 3 {
+		return
+	}
+
+	if args[1] == "git" && args[2] == "commit" {
+		collectCommitStats()
+		return
+	}
+	
+	executeArgs(args)
 }
 
 func executeArgs(args []string) {
-	if len(args) == 1 {
-		return
-	}
 
 	var command *exec.Cmd
 
@@ -32,4 +43,21 @@ func executeArgs(args []string) {
 		}
 
 	fmt.Printf("%s", output)
+}
+
+func collectCommitStats() {
+	output, err := exec.Command("git", "diff").Output()
+
+	if err != nil {
+		log.Fatal("collectCommiStats", err)
+	}
+	str := strings.Split(string(output), "\n")
+
+	// possibly some input validation here on the git diff bytes?
+	// e.g. if not valit log.Fatal("non standard git diff format %v", str(output))
+	diffLines := str[4]
+	subtracted := diffLines[6:8]
+	added := diffLines[12:14]
+
+	fmt.Printf("%v, %v", added, subtracted)
 }
