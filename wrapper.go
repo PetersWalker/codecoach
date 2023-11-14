@@ -21,7 +21,6 @@ func main() {
 
 	if args[1] == "git" && args[2] == "commit" {
 		collectCommitStats()
-		return
 	}
 	
 	executeArgs(args)
