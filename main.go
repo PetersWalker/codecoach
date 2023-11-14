@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"encoding/json"
+	"os"
 )
 
 func main() {
@@ -24,5 +25,5 @@ func printStatsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Fprint(w, err)
 	}
-	fmt.Fprint(w, data)
+	fmt.Fprint(os.Stdout, data)
 }
