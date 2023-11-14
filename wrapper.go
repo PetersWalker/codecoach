@@ -47,7 +47,7 @@ func executeArgs(args []string) {
 }
 
 func collectCommitStats() {
-	output, err := exec.Command("git", "diff").Output()
+	output, err := exec.Command("git", "diff", "HEAD").Output()
 
 	if err != nil {
 		log.Fatal("collectCommitStats", err)
