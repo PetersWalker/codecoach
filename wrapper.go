@@ -8,31 +8,28 @@ import (
 )
 
 func main() {
-	if len(os.Args) == 2 {
-		command := os.Args[1]
+	executeArgs(os.Args)
+}
 
-		log.Printf("Running %v ", command)
-		output, err := exec.Command(command).Output()
+func executeArgs(args []string) {
+	if len(args) == 1 {
+		return
+	}
 
-		if err != nil{
+	var command *exec.Cmd
+
+	if len(args) == 2 {
+		command = exec.Command(args[1])
+	}
+
+	if len(args) > 2 {
+		command = exec.Command(args[1], args[2:]...)
+	}
+
+	output, err := command.Output()
+	if err != nil{
 			log.Fatal(err)
 		}
 
-		fmt.Printf("%s", output)
-	}
-
-	if len(os.Args) > 2 {
-		command := os.Args[1]
-		// args := ""
-		// for _, v := range os.Args[2:] {
-		// 	args = args + v + " "
-		// }
-		output, err := exec.Command(command, os.Args[2:]...).Output()
-
-		if err != nil{
-			log.Fatal(err)
-		}
-
-		fmt.Printf("%s", output)
-	}
+	fmt.Printf("%s", output)
 }
