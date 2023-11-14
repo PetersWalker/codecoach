@@ -1,5 +1,5 @@
 # Description
-I want to make it a habit of coding everyday to become a better software engineer. This app will track my progress with that goal and notify my if I've fallen off the wagon.
+This tool tracks and displays statistics on how much you've been programming.
 
 ## MVP
-wrap around git w/ an alias to track commits and stats, save statistics locallay, notify me on my progress everyday with useful statistics
+A cli `wrapper.go` wraps git commmands with a that collects statistics on git commtis, and notifies you via a local server (in `main.go`) with daily statistics.
