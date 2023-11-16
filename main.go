@@ -1,17 +1,13 @@
 package main
 
 import (
+	"database/sql"
+	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
-	"encoding/json"
-	"io"
-	"database/sql"
 	"path/filepath"
-
-	_ "modernc.org/sqlite"
-
-	_ "codecoach/types"
 )
 
 var db *sql.DB
@@ -37,16 +33,16 @@ func healthhandler(w http.ResponseWriter, r *http.Request) {
 
 func postStatsHandler(w http.ResponseWriter, r *http.Request) {
 	var data map[string]string
-	err:= json.NewDecoder(r.Body).Decode(&data)
+	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		fmt.Fprint(w, err)
 	}
 	fmt.Printf("%v\n", data)
-	query:= `insert into commit_stats values(?, ?)`
+	query := `insert into commit_stats values(?, ?)`
 	db.Query(query, data["LinesAdded"], data["LinesSubtracted"])
 }
 
-func getDatabasePath(relativePath string) string{
+func getDatabasePath(relativePath string) string {
 	absolutePath, err := filepath.Abs(relativePath)
 
 	if err != nil {
