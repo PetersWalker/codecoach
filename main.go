@@ -6,10 +6,26 @@ import (
 	"net/http"
 	"encoding/json"
 	"io"
+	"database/sql"
+	"path/filepath"
+
+	_ "modernc.org/sqlite"
+
+	_ "codecoach/types"
 )
 
+var db *sql.DB
+
 func main() {
-	http.HandleFunc("/", healthhandler) // each request calls handler
+	dbPath := getDatabasePath("./analytics.db")
+	var err error
+	db, err = sql.Open("sqlite", dbPath)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	http.HandleFunc("/", healthhandler)
 	http.HandleFunc("/postStats", postStatsHandler)
 	log.Fatal(http.ListenAndServe("localhost:8000", nil))
 }
@@ -26,4 +42,20 @@ func postStatsHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, err)
 	}
 	fmt.Printf("%v\n", data)
+	query:= `insert into commit_stats values(?, ?)`
+	db.Query(query, data["LinesAdded"], data["LinesSubtracted"])
+}
+
+func getDatabasePath(relativePath string) string{
+	absolutePath, err := filepath.Abs(relativePath)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return absolutePath
+}
+
+func insertStats(stats string) string {
+	return stats
 }

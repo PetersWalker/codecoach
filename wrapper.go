@@ -9,17 +9,19 @@ import (
 	"bytes"
 	"strings"
 	"encoding/json"
+
+	"codecoach/types"
 )
 
 func main() {
 	args := os.Args
 
-	
 	if len(args) < 3 {
+		log.Print("no arguments")
 		return
 	}
 
-	if args[1] == "git" && args[2] == "commit" {
+	if args[1] == "git" && args[2] == "diff" {
 		collectCommitStats()
 	}
 	
@@ -63,12 +65,7 @@ func collectCommitStats() {
 	subtracted := diffLines[6:8]
 	added := diffLines[12:14]
 
-	type Stats struct {
-		LinesAdded string
-		LinesSubtracted string
-	}
-
-	stats := Stats{
+	stats := types.Stats{
 		LinesAdded: added,
 		LinesSubtracted: subtracted,
 	}

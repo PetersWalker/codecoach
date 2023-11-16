@@ -1,0 +1,1 @@
+create table commit_stats (lines_added int, lines_subtracted int)
