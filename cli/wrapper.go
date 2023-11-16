@@ -1,17 +1,12 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"os/exec"
-	"strings"
 
 	"codecoach/stats"
-	"codecoach/types"
 )
 
 func main() {
@@ -22,11 +17,8 @@ func main() {
 		return
 	}
 
-	if args[1] == "git" && args[2] == "diff" {
-		stats.CollectCommitStats()
-	}
-
 	executeArgs(args)
+	go postCommandHook(args)
 }
 
 func executeArgs(args []string) {
@@ -38,59 +30,28 @@ func executeArgs(args []string) {
 	}
 
 	if len(args) > 2 {
+		log.Print("test")
+		log.Print("test2")
+
 		command = exec.Command(args[1], args[2:]...)
+		log.Print("test3")
+
 	}
 
 	output, err := command.Output()
+	log.Print("test4")
+
 	if err != nil {
+		log.Print("test5")
 		log.Fatal(err)
 	}
 
 	fmt.Printf("%s", output)
 }
 
-func collectCommitStats() {
-	output, err := exec.Command("git", "diff", "HEAD").Output()
+func postCommandHook(args []string) {
 
-	if err != nil {
-		log.Fatal("collectCommitStats", err)
-	}
-	str := strings.Split(string(output), "\n")
-
-	// possibly some input validation here on the git diff bytes?
-	// e.g. if not valit log.Fatal("non standard git diff format %v", str(output))
-	for _, v := range str {
-		fmt.Println(v)
-	}
-	diffLines := str[4]
-	subtracted := diffLines[6:8]
-	added := diffLines[12:14]
-
-	stats := types.Stats{
-		LinesAdded:      added,
-		LinesSubtracted: subtracted,
-	}
-
-	b, err := json.Marshal(stats)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	body := bytes.NewBuffer(b)
-	req, err := http.NewRequest("POST", "http://localhost:8000/postStats", body)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	client := &http.Client{}
-	res, err := client.Do(req)
-	if err != nil {
-		panic(err)
-	}
-
-	if res.StatusCode != 200 {
-		panic(res.Status)
+	if args[1] == "git" && args[2] == "commit" {
+		stats.CollectCommitStats()
 	}
 }

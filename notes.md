@@ -8,3 +8,7 @@
 
 2.  Ui for displaying data
     ueries on the 
+    
+#
+
+3. preserve color formatting and errors when executing git with the wrapper
