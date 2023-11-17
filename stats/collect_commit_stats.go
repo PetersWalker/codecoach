@@ -18,21 +18,10 @@ func CollectCommitStats() {
 	if err != nil {
 		log.Fatal("collectCommitStats", err)
 	}
-	str := strings.Split(string(output), "\n")
+	stats := parseCommit(output)
 
 	// possibly some input validation here on the git diff bytes?
 	// e.g. if not valit log.Fatal("non standard git diff format %v", str(output))
-	for _, v := range str {
-		fmt.Println(v)
-	}
-	diffLines := str[4]
-	subtracted := diffLines[6:8]
-	added := diffLines[12:14]
-
-	stats := types.Stats{
-		LinesAdded:      added,
-		LinesSubtracted: subtracted,
-	}
 
 	b, err := json.Marshal(stats)
 
@@ -55,5 +44,20 @@ func CollectCommitStats() {
 
 	if res.StatusCode != 200 {
 		panic(res.Status)
+	}
+}
+
+func parseCommit(output []byte) types.Stats {
+	str := strings.Split(string(output), "\n")
+	for _, v := range str {
+		fmt.Println(v)
+	}
+	diffLines := str[4]
+	subtracted := diffLines[6:8]
+	added := diffLines[12:14]
+
+	return types.Stats{
+		LinesAdded:      added,
+		LinesSubtracted: subtracted,
 	}
 }
