@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"path/filepath"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "modernc.org/sqlite"
 )
 
 var db *sql.DB
@@ -17,7 +17,7 @@ var db *sql.DB
 func main() {
 	dbPath := getDatabasePath("./analytics.db")
 	var err error
-	db, err = sql.Open("sqlite3", dbPath)
+	db, err = sql.Open("sqlite", dbPath)
 
 	if err != nil {
 		log.Fatal(err)
