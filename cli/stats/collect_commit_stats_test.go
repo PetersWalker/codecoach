@@ -39,7 +39,7 @@ func TestParseCommit(t *testing.T) {
 			LinesSubtracted: "51",
 			Name:            "PetersWalker",
 			Date:            time,
-			Commit:          "c9fe1ef646916078b52540846e25b5a156e6eb39",
+			CommitHash:      "c9fe1ef646916078b52540846e25b5a156e6eb39",
 		},
 		{
 			Filepath:        "notes.md",
@@ -47,7 +47,7 @@ func TestParseCommit(t *testing.T) {
 			LinesSubtracted: "1",
 			Name:            "PetersWalker",
 			Date:            time,
-			Commit:          "c9fe1ef646916078b52540846e25b5a156e6eb39",
+			CommitHash:      "c9fe1ef646916078b52540846e25b5a156e6eb39",
 		},
 	}
 
@@ -74,7 +74,7 @@ func TestParseCommitSingleFileChange(t *testing.T) {
 			LinesSubtracted: "51",
 			Name:            "PetersWalker",
 			Date:            time,
-			Commit:          "c9fe1ef646916078b52540846e25b5a156e6eb39",
+			CommitHash:      "c9fe1ef646916078b52540846e25b5a156e6eb39",
 		},
 	}
 

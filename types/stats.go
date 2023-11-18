@@ -8,5 +8,5 @@ type Stats struct {
 	LinesSubtracted string
 	Name            string
 	Date            time.Time
-	Commit          string
+	CommitHash      string
 }

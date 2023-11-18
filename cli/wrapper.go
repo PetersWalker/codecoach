@@ -6,7 +6,7 @@ import (
 	"os"
 	"os/exec"
 
-	"codecoach/stats"
+	"codecoach/cli/stats"
 )
 
 func main() {

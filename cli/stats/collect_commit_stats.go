@@ -3,7 +3,6 @@ package stats
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os/exec"
@@ -52,25 +51,19 @@ func CollectCommitStats() {
 }
 
 func parseCommit(gitLogNumstat []byte) []types.Stats {
-
 	str := strings.Split(string(gitLogNumstat), "\n")
 	commitLine := str[0]
 	nameLine := str[1]
 	dateLine := str[2]
 	diffLines := str[6:]
-	fmt.Printf("%s", diffLines)
-	var commitStats []types.Stats
 
 	commit := strings.Fields(commitLine)[1]
 	name := strings.Fields(nameLine)[1]
 	dateString := strings.Join(strings.Fields(dateLine)[1:], " ")
 	layout := "Mon Jan 02 15:04:05 2006 -0700"
 	date, _ := time.Parse(layout, dateString)
-	fmt.Println("date", date)
 
-	fmt.Println("diffLines", diffLines)
-	fmt.Println("diffLines length", len(diffLines))
-
+	var commitStats []types.Stats
 	for _, line := range diffLines {
 
 		// ignore empty lines typically at the end
@@ -79,8 +72,6 @@ func parseCommit(gitLogNumstat []byte) []types.Stats {
 		}
 
 		diff := strings.Fields(line)
-		fmt.Println("diff", diff)
-
 		added := diff[0]
 		subtracted := diff[1]
 		file := diff[2]
@@ -89,12 +80,9 @@ func parseCommit(gitLogNumstat []byte) []types.Stats {
 			LinesAdded:      added,
 			LinesSubtracted: subtracted,
 			Name:            name,
-			Commit:          commit,
+			CommitHash:      commit,
 			Date:            date,
 		})
 	}
-
-	fmt.Println("commit stats", commitStats)
-
 	return commitStats
 }
