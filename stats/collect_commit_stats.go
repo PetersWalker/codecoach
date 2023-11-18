@@ -25,6 +25,7 @@ func CollectCommitStats() {
 	// e.g. if not valit log.Fatal("non standard git diff format %v", str(output))
 
 	b, err := json.Marshal(stats)
+	log.Println("json", b)
 
 	if err != nil {
 		log.Fatal(err)
@@ -46,6 +47,8 @@ func CollectCommitStats() {
 	if res.StatusCode != 200 {
 		log.Fatal(res.Status)
 	}
+
+	log.Println("response", res)
 }
 
 func parseCommit(output []byte) []types.Stats {

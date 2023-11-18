@@ -18,7 +18,7 @@ func main() {
 	}
 
 	executeArgs(args)
-	go postCommandHook(args)
+	postCommandHook(args)
 }
 
 func executeArgs(args []string) {
