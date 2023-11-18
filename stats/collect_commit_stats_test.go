@@ -1,10 +1,14 @@
 package stats
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"testing"
+	"time"
+
+	"gotest.tools/v3/assert"
+
+	"codecoach/types"
 )
 
 var data = `commit c9fe1ef646916078b52540846e25b5a156e6eb39 (HEAD -> main)
@@ -18,10 +22,42 @@ Date:   Thu Nov 16 14:44:17 2023 -0500
 `
 
 func TestParseCommit(t *testing.T) {
-	// get fixture
+	// setup
 	bytes, err := os.ReadFile("./fixtures/git_log_numstat.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%s", bytes)
+
+	// act
+	result := parseCommit(bytes)
+	layout := "Mon Jan 02 15:04:05 2006 -0700"
+	time, _ := time.Parse(layout, "Thu Nov 16 14:44:17 2023 -0500")
+	var expected = []types.Stats{
+		{
+			Filepath:        "cli/wrapper.go",
+			LinesAdded:      "12",
+			LinesSubtracted: "51",
+			Name:            "PetersWalker",
+			Date:            time,
+			Commit:          "c9fe1ef646916078b52540846e25b5a156e6eb39",
+		},
+		{
+			Filepath:        "notes.md",
+			LinesAdded:      "5",
+			LinesSubtracted: "1",
+			Name:            "PetersWalker",
+			Date:            time,
+			Commit:          "c9fe1ef646916078b52540846e25b5a156e6eb39",
+		},
+	}
+
+	// assert
+	AssertEqualSlices[types.Stats](t, result, expected)
+
+}
+
+func AssertEqualSlices[T comparable](t assert.TestingT, result []T, expected []T) {
+	for i, v := range result {
+		assert.DeepEqual(t, v, expected[i])
+	}
 }

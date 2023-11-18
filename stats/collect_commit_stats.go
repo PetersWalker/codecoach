@@ -8,12 +8,13 @@ import (
 	"net/http"
 	"os/exec"
 	"strings"
+	"time"
 
 	"codecoach/types"
 )
 
 func CollectCommitStats() {
-	output, err := exec.Command("git", "diff", "HEAD").Output()
+	output, err := exec.Command("git", "log", "--numstat", "-1").Output()
 
 	if err != nil {
 		log.Fatal("collectCommitStats", err)
@@ -47,17 +48,41 @@ func CollectCommitStats() {
 	}
 }
 
-func parseCommit(output []byte) types.Stats {
+func parseCommit(output []byte) []types.Stats {
 	str := strings.Split(string(output), "\n")
-	for _, v := range str {
-		fmt.Println(v)
-	}
-	diffLines := str[4]
-	subtracted := diffLines[6:8]
-	added := diffLines[12:14]
+	commitLine := str[0]
+	nameLine := str[1]
+	dateLine := str[2]
+	diffLines := str[6:]
+	var commitStats []types.Stats
 
-	return types.Stats{
-		LinesAdded:      added,
-		LinesSubtracted: subtracted,
+	commit := strings.Fields(commitLine)[1]
+	name := strings.Fields(nameLine)[1]
+	dateString := strings.Join(strings.Fields(dateLine)[1:], " ")
+	layout := "Mon Jan 02 15:04:05 2006 -0700"
+	date, _ := time.Parse(layout, dateString)
+	fmt.Println("date", date)
+
+	fmt.Println("diffLines", diffLines)
+
+	for _, line := range diffLines {
+		diff := strings.Fields(line)
+		fmt.Println("diff", diff)
+
+		added := diff[0]
+		subtracted := diff[1]
+		file := diff[2]
+		commitStats = append(commitStats, types.Stats{
+			Filepath:        file,
+			LinesAdded:      added,
+			LinesSubtracted: subtracted,
+			Name:            name,
+			Commit:          commit,
+			Date:            date,
+		})
 	}
+
+	fmt.Println("commit stats", commitStats)
+
+	return commitStats
 }
