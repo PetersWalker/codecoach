@@ -40,11 +40,11 @@ func CollectCommitStats() {
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	if res.StatusCode != 200 {
-		panic(res.Status)
+		log.Fatal(res.Status)
 	}
 }
 

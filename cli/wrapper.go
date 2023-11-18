@@ -30,19 +30,12 @@ func executeArgs(args []string) {
 	}
 
 	if len(args) > 2 {
-		log.Print("test")
-		log.Print("test2")
-
 		command = exec.Command(args[1], args[2:]...)
-		log.Print("test3")
-
 	}
 
 	output, err := command.Output()
-	log.Print("test4")
 
 	if err != nil {
-		log.Print("test5")
 		log.Fatal(err)
 	}
 

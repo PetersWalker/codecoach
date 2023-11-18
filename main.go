@@ -35,12 +35,13 @@ func healthhandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func postStatsHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("postStats called")
 	var data []map[string]string
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		fmt.Fprint(w, err)
 	}
-	fmt.Printf("%v\n", data)
+	log.Println(data)
 	for _, commit := range data {
 		query := `insert into commit_stats values(?, ?)`
 
