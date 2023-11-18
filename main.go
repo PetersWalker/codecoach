@@ -8,6 +8,8 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var db *sql.DB
@@ -24,6 +26,7 @@ func main() {
 	http.HandleFunc("/", healthhandler)
 	http.HandleFunc("/postStats", postStatsHandler)
 	log.Fatal(http.ListenAndServe("localhost:8000", nil))
+	fmt.Println("listening on local:8000")
 }
 
 // handler echoes the Path component of the request URL r.
@@ -32,14 +35,18 @@ func healthhandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func postStatsHandler(w http.ResponseWriter, r *http.Request) {
-	var data map[string]string
+	var data []map[string]string
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		fmt.Fprint(w, err)
 	}
 	fmt.Printf("%v\n", data)
-	query := `insert into commit_stats values(?, ?)`
-	db.Query(query, data["LinesAdded"], data["LinesSubtracted"])
+	for _, commit := range data {
+		query := `insert into commit_stats values(?, ?)`
+
+		db.Query(query, commit["LinesAdded"], commit["LinesSubtracted"])
+	}
+
 }
 
 func getDatabasePath(relativePath string) string {
