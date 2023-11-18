@@ -69,6 +69,7 @@ func parseCommit(gitLogNumstat []byte) []types.Stats {
 	fmt.Println("date", date)
 
 	fmt.Println("diffLines", diffLines)
+	fmt.Println("diffLines length", len(diffLines))
 
 	for _, line := range diffLines {
 		diff := strings.Fields(line)

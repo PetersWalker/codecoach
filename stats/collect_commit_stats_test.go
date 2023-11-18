@@ -56,6 +56,33 @@ func TestParseCommit(t *testing.T) {
 
 }
 
+func TestParseCommitSingleFileChange(t *testing.T) {
+	// setup
+	bytes, err := os.ReadFile("./fixtures/git_log_numstat_single_file.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// act
+	result := parseCommit(bytes)
+	layout := "Mon Jan 02 15:04:05 2006 -0700"
+	time, _ := time.Parse(layout, "Thu Nov 16 14:44:17 2023 -0500")
+	var expected = []types.Stats{
+		{
+			Filepath:        "cli/wrapper.go",
+			LinesAdded:      "12",
+			LinesSubtracted: "51",
+			Name:            "PetersWalker",
+			Date:            time,
+			Commit:          "c9fe1ef646916078b52540846e25b5a156e6eb39",
+		},
+	}
+
+	// assert
+	AssertEqualSlices[types.Stats](t, result, expected)
+
+}
+
 func AssertEqualSlices[T comparable](t assert.TestingT, result []T, expected []T) {
 	for i, v := range result {
 		assert.DeepEqual(t, v, expected[i])
