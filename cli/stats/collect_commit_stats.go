@@ -74,7 +74,7 @@ func parseCommit(gitLogNumstat []byte) []types.Stats {
 		diff := strings.Fields(line)
 		added := diff[0]
 		subtracted := diff[1]
-		file := diff[2]
+		file := strings.Join(diff[2:], " ")
 		commitStats = append(commitStats, types.Stats{
 			Filepath:        file,
 			LinesAdded:      added,
