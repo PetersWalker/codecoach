@@ -51,8 +51,9 @@ func CollectCommitStats() {
 	log.Println("response", res)
 }
 
-func parseCommit(output []byte) []types.Stats {
-	str := strings.Split(string(output), "\n")
+func parseCommit(gitLogNumstat []byte) []types.Stats {
+	fmt.Println("GIT LOG NUMSTAT", gitLogNumstat)
+	str := strings.Split(string(gitLogNumstat), "\n")
 	commitLine := str[0]
 	nameLine := str[1]
 	dateLine := str[2]
