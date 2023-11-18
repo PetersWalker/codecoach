@@ -73,8 +73,8 @@ func parseCommit(gitLogNumstat []byte) []types.Stats {
 
 	for _, line := range diffLines {
 
-		// ignore new line typically at the end
-		if line == "\n" {
+		// ignore empty lines typically at the end
+		if len(line) == 0 {
 			continue
 		}
 
