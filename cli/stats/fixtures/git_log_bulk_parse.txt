@@ -1,0 +1,15 @@
+commit 7b117fac5a2712e1d26cd094b2b0bd75b255071d (HEAD -> main)
+Author: PetersWalker <petersinclairwalker@gmail.com>
+Date:   Sat Nov 18 17:03:35 2023 -0500
+
+    fix: file nesting change bug in numstat
+
+6       0       go.sum
+
+commit 9035a1e721b1c3e0f39cc682543527f15f561029
+Author: PetersWalker <petersinclairwalker@gmail.com>
+Date:   Sat Nov 18 15:24:49 2023 -0500
+
+    feat: added additional stats
+
+2       14      {stats => cli/stats}/collect_commit_stats.go

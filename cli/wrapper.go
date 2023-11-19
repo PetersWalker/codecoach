@@ -12,6 +12,11 @@ import (
 func main() {
 	args := os.Args
 
+	if args[1] == "bulk" {
+		stats.BulkParse()
+		return
+	}
+
 	if len(args) < 3 {
 		log.Print("no arguments")
 		return
