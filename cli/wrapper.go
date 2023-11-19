@@ -11,23 +11,30 @@ import (
 
 func main() {
 	args := os.Args
+	if len(args) == 1 {
+		log.Println("codecoach: no arguments provided")
+		return
+	}
 
-	if args[1] == "bulk" {
+	// if I want
+	if args[1] == "--bulk" {
 		stats.BulkParse()
 		return
 	}
 
-	if len(args) < 3 {
-		log.Print("no arguments")
-		return
+	output, _ := executeArgs(args)
+	fmt.Printf("%v", string(output))
+
+	if len(args) > 2 {
+		if args[1] == "git" && args[2] == "commit" {
+			postCommandHook(args)
+		}
 	}
 
-	executeArgs(args)
-	postCommandHook(args)
+	return
 }
 
-func executeArgs(args []string) {
-
+func executeArgs(args []string) ([]byte, error) {
 	var command *exec.Cmd
 
 	if len(args) == 2 {
@@ -40,11 +47,7 @@ func executeArgs(args []string) {
 
 	output, err := command.Output()
 
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Printf("%s", output)
+	return output, err
 }
 
 func postCommandHook(args []string) {
