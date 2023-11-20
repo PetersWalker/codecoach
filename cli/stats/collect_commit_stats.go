@@ -1,6 +1,7 @@
 package stats
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"log"
@@ -11,6 +12,19 @@ import (
 
 	"codecoach/types"
 )
+
+type RawFile struct {
+	FilePath   string
+	Added      string
+	Subtracted string
+}
+
+type RawCommit struct {
+	CommitHash string
+	Author     string
+	Date       string
+	files      []RawFile
+}
 
 func CollectCommitStats() {
 	output, err := exec.Command("git", "log", "--numstat", "-1").Output()
@@ -85,4 +99,83 @@ func parseCommit(gitLogNumstat []byte) []types.Stats {
 		})
 	}
 	return commitStats
+}
+
+type LogOptions struct {
+	AllLogs bool
+}
+
+func ProcessGitLogs(options LogOptions) {
+	var cmd *exec.Cmd
+	if options.AllLogs == true {
+		cmd = exec.Command("git", "log", "--numstat")
+	} else {
+		cmd = exec.Command("git", "log", "--numstat", "-1")
+	}
+
+	stdout, err := cmd.StdoutPipe()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	cmd.Start()
+
+	scanner := bufio.NewScanner(stdout)
+
+	var commit RawCommit
+	var commitList []RawCommit
+	for scanner.Scan() {
+		s := scanner.Text()
+		const commitSignature string = "commit "
+		const authorSignature string = "Author: "
+		const dateSignature string = "Date: "
+		const messageSignature string = "    "
+
+		if strings.HasPrefix(s, commitSignature) {
+
+			if commit.CommitHash != "" {
+				commitList = append(commitList, commit)
+				commit = RawCommit{}
+			}
+
+			commit.CommitHash = s
+			continue
+		}
+
+		if strings.HasPrefix(s, authorSignature) {
+			commit.Author = s
+			continue
+		}
+
+		if strings.HasPrefix(s, dateSignature) {
+			commit.Date = s
+			continue
+		}
+
+		if strings.HasPrefix(s, messageSignature) {
+			commit.Date = s
+			continue
+		}
+
+		if len(s) == 0 {
+			continue
+		}
+
+		rawFile := parseFileChangeLine(s)
+		commit.files = append(commit.files, rawFile)
+	}
+
+}
+
+func parseFileChangeLine(s string) RawFile {
+	diff := strings.Fields(s)
+	added := diff[0]
+	subtracted := diff[1]
+	file := strings.Join(diff[2:], " ")
+
+	return RawFile{
+		Added:      added,
+		Subtracted: subtracted,
+		FilePath:   file,
+	}
 }

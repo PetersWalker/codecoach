@@ -11,6 +11,7 @@ import (
 
 func main() {
 	args := os.Args
+
 	if len(args) == 1 {
 		log.Println("codecoach: no arguments provided")
 		return
@@ -22,11 +23,17 @@ func main() {
 		return
 	}
 
+	// testing flag
+	if args[1] == "test" {
+		stats.ProcessGitLogs(stats.LogOptions{AllLogs: true})
+		return
+	}
+
 	output, _ := executeArgs(args)
 	fmt.Printf("%v", string(output))
 
 	if len(args) > 2 {
-		if args[1] == "git" && args[2] == "commit" {
+		if args[1] == "git" && args[2] == "git" {
 			postCommandHook(args)
 		}
 	}
@@ -51,8 +58,5 @@ func executeArgs(args []string) ([]byte, error) {
 }
 
 func postCommandHook(args []string) {
-
-	if args[1] == "git" && args[2] == "commit" {
-		stats.CollectCommitStats()
-	}
+	// stats.CollectCommitStats()
 }
