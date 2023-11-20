@@ -1,0 +1,30 @@
+html {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    background: #efefef;
+}
+
+.box {
+    background: white;
+    margin: 4rem;
+    padding: 2rem
+}
+
+#nav {
+    height: 4rem;
+    background: #262689;
+    color: white;
+    font-family: monospace;
+    display: flex;
+    align-items: center;
+
+}
+
+#homelink {
+    font-size: 2rem;
+    margin-left: 1rem;
+
+}

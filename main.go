@@ -15,12 +15,13 @@ var db *sql.DB
 func main() {
 	counter := 0
 	h1 := func(w http.ResponseWriter, r *http.Request) {
-		tmpl := template.Must(template.ParseFiles("public/index.html"))
+		tmpl := template.Must(template.ParseFiles("index.html"))
 		tmpl.Execute(w, counter)
 		counter = counter + 1
 	}
 
-	http.HandleFunc("/", h1)
+	http.Handle("/", http.FileServer(http.Dir("./public")))
+	http.HandleFunc("/home", h1)
 	http.HandleFunc("/health", healthhandler)
 	http.HandleFunc("/postStats", handlers.PostStatsHandler)
 	log.Fatal(http.ListenAndServe("localhost:8000", nil))
