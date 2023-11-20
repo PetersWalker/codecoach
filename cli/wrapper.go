@@ -33,7 +33,7 @@ func main() {
 	fmt.Printf("%v", string(output))
 
 	if len(args) > 2 {
-		if args[1] == "git" && args[2] == "git" {
+		if args[1] == "git" && args[2] == "commit" {
 			postCommandHook(args)
 		}
 	}
@@ -58,5 +58,5 @@ func executeArgs(args []string) ([]byte, error) {
 }
 
 func postCommandHook(args []string) {
-	// stats.CollectCommitStats()
+	stats.CollectCommitStats()
 }
