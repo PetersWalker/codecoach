@@ -8,7 +8,7 @@
 
 <body>
     <div id="nav">
-        <h1 id="homelink">Code_Coach</h1>
+        <h1 id="homelink">codeCoach</h1>
     </div>
     <div class="box">
 
@@ -17,17 +17,37 @@
             <canvas id="myChart"></canvas>
         </div>
         <script>
+            const data = JSON.parse("{{ . }}")
             const ctx = document.getElementById('myChart');
+
+            const dates = data.map(row => new Date(row.Date).toLocaleDateString())
+
+            var reduced = [data[0]]
+            const added = data.map(row => row.Added)
+            const subtracted = data.map(row => row.Subtracted)
+            const cum = data.map(row => row.Added - row.Subtracted)
 
             new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                    datasets: [{
-                        label: '# of Votes',
-                        data: [12, 19, 3, 5, 2, 3],
-                        borderWidth: 1
-                    }]
+                    labels: dates,
+                    datasets: [
+                        {
+                            label: 'lines added',
+                            data: added,
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'lines subtracted',
+                            data: subtracted,
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'cumulative',
+                            data: cum,
+                            borderWidth: 1
+                        }
+                    ]
                 },
                 options: {
                     scales: {
@@ -38,8 +58,6 @@
                 }
             });
         </script>
-        <p>{{ . }}</p>
-
     </div>
 </body>
 
