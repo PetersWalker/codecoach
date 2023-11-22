@@ -29,10 +29,11 @@ func TestSaveStats(t *testing.T) {
 	}
 
 	// action
-	result, err := saveStatsData(db.Client, stats)
+	result, err := recordStatsData(db.Client, stats)
 	assert.NilError(t, err)
 	assert.DeepEqual(t, result, stats)
 }
+
 func TestPostStat(t *testing.T) {
 	//setup
 	layout := "Mon Jan 02 15:04:05 2006 -0700"

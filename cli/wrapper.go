@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"os"
 	"os/exec"
 
@@ -12,31 +10,22 @@ import (
 func main() {
 	args := os.Args
 
+	// bulk import flag
 	if len(args) == 1 {
-		log.Println("codecoach: no arguments provided")
+		stats.TokenizeGitLogs(stats.LogOptions{AllLogs: false})
 		return
 	}
 
-	// if I want
-	if args[1] == "--bulk" {
-		stats.BulkParse()
+	if args[1] == "bulk" {
+		rawCommits := stats.TokenizeGitLogs(stats.LogOptions{AllLogs: true})
+		stats.FlushCommits(rawCommits)
 		return
 	}
-
-	// testing flag
-	if args[1] == "test" {
-		stats.ProcessGitLogs(stats.LogOptions{AllLogs: true})
-		return
-	}
-
-	output, _ := executeArgs(args)
-	fmt.Printf("%v", string(output))
-
-	if len(args) > 2 {
-		if args[1] == "git" && args[2] == "commit" {
-			postCommandHook(args)
-		}
-	}
+	// if len(args) > 2 {
+	// 	if args[1] == "git" && args[2] == "commit" {
+	// 		postCommandHook(args)
+	// 	}
+	// }
 
 	return
 }

@@ -8,7 +8,9 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 
+	"codecoach/cli/stats"
 	"codecoach/db"
 	"codecoach/types"
 )
@@ -26,7 +28,7 @@ func PostStatsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println(data)
-	saved_data, err := saveStatsData(db.Client, data)
+	saved_data, err := recordStatsData(db.Client, data)
 
 	if err != nil {
 		log.Println(err)
@@ -35,7 +37,7 @@ func PostStatsHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(saved_data)
 }
 
-func saveStatsData(db *sql.DB, data []types.Stats) ([]types.Stats, error) {
+func recordStatsData(db *sql.DB, data []types.Stats) ([]types.Stats, error) {
 	var err error
 
 	for _, commit := range data {
@@ -63,6 +65,59 @@ func saveStatsData(db *sql.DB, data []types.Stats) ([]types.Stats, error) {
 	}
 
 	return data, err
+
+}
+
+func PostCommitsBulk(w http.ResponseWriter, r *http.Request) {
+	start := time.Now().UnixMilli()
+	log.Println("postCommits")
+	var commits []stats.RawCommit
+
+	err := json.NewDecoder(r.Body).Decode(&commits)
+
+	if err != nil {
+		fmt.Fprint(w, err)
+	}
+
+	for _, commit := range commits {
+		stats := castToStats(commit)
+		_, err := recordStatsData(db.Client, stats)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if err != nil {
+		log.Println(err)
+		w.Write([]byte(err.Error()))
+	}
+
+	end := time.Now().UnixMilli()
+	log.Println("completed postCommits in: ", end-start, "ms")
+}
+
+func castToStats(commit stats.RawCommit) []types.Stats {
+	var stats []types.Stats
+	for _, file := range commit.Files {
+		unixDate, err := time.Parse(time.UnixDate, commit.Date)
+
+		if err != nil {
+			log.Panic(err)
+		}
+
+		stat := types.Stats{
+			Filepath:        file.FilePath,
+			LinesAdded:      file.Added,
+			LinesSubtracted: file.Subtracted,
+			Name:            commit.Author,
+			Date:            unixDate,
+			CommitHash:      commit.CommitHash,
+		}
+
+		stats = append(stats, stat)
+	}
+
+	return stats
 
 }
 
