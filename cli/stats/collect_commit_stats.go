@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"codecoach/types"
+	"codecoach/commits"
 )
 
 func CollectCommitStats() {
@@ -52,7 +52,7 @@ func CollectCommitStats() {
 	log.Println("response", res)
 }
 
-func parseCommit(gitLogNumstat []byte) []types.Stats {
+func parseCommit(gitLogNumstat []byte) []commits.RawStats {
 	str := strings.Split(string(gitLogNumstat), "\n")
 	commitLine := str[0]
 	nameLine := str[1]
@@ -65,7 +65,7 @@ func parseCommit(gitLogNumstat []byte) []types.Stats {
 	layout := "Mon Jan 02 15:04:05 2006 -0700"
 	date, _ := time.Parse(layout, dateString)
 
-	var commitStats []types.Stats
+	var commitStats []commits.RawStats
 	for _, line := range diffLines {
 
 		// ignore empty lines typically at the end
@@ -77,7 +77,7 @@ func parseCommit(gitLogNumstat []byte) []types.Stats {
 		added := diff[0]
 		subtracted := diff[1]
 		file := strings.Join(diff[2:], " ")
-		commitStats = append(commitStats, types.Stats{
+		commitStats = append(commitStats, commits.RawStats{
 			Filepath:        file,
 			LinesAdded:      added,
 			LinesSubtracted: subtracted,
@@ -90,13 +90,13 @@ func parseCommit(gitLogNumstat []byte) []types.Stats {
 }
 
 // todo test
-func parseFileChangeLine(s string) RawFile {
+func parseFileChangeLine(s string) commits.RawFile {
 	diff := strings.Fields(s)
 	added := diff[0]
 	subtracted := diff[1]
 	file := strings.Join(diff[2:], " ")
 
-	return RawFile{
+	return commits.RawFile{
 		Added:      added,
 		Subtracted: subtracted,
 		FilePath:   file,

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"codecoach/commits"
 	"os"
 	"os/exec"
 
@@ -12,13 +13,12 @@ func main() {
 
 	// bulk import flag
 	if len(args) == 1 {
-		stats.TokenizeGitLogs(stats.LogOptions{AllLogs: false})
+		stats.ReadGitLogs(commits.LogOptions{AllLogs: false})
 		return
 	}
 
 	if args[1] == "bulk" {
-		rawCommits := stats.TokenizeGitLogs(stats.LogOptions{AllLogs: true})
-		stats.FlushCommits(rawCommits)
+		stats.ReadGitLogs(commits.LogOptions{AllLogs: true})
 		return
 	}
 	// if len(args) > 2 {

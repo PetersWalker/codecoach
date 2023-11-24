@@ -3,7 +3,7 @@ package stats
 import (
 	"bufio"
 	"bytes"
-	"codecoach/types"
+	"codecoach/commits"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -14,8 +14,8 @@ import (
 	"sync"
 )
 
-func TokenizeGitLogs(options LogOptions) []RawCommit {
-	commands := []string{"git", "log", "--numstat", "--date=raw"}
+func ReadGitLogs(options commits.LogOptions) {
+	commands := []string{"git", "log", "--numstat", "--date=unix"}
 
 	if options.AllLogs == false {
 		commands = append(commands, "-1")
@@ -31,9 +31,13 @@ func TokenizeGitLogs(options LogOptions) []RawCommit {
 	cmd.Start()
 
 	scanner := bufio.NewScanner(stdout)
+	rawcommits := tokenizeGitLogs(scanner)
+	FlushCommits(rawcommits)
+}
 
-	var commit RawCommit
-	var commitList []RawCommit
+func tokenizeGitLogs(scanner *bufio.Scanner) []commits.RawCommit {
+	var commit commits.RawCommit
+	var commitList []commits.RawCommit
 	for scanner.Scan() {
 		s := scanner.Text()
 		fmt.Println(s)
@@ -47,7 +51,7 @@ func TokenizeGitLogs(options LogOptions) []RawCommit {
 			// if we reach a new commit, append the previously collected commit
 			if commit.CommitHash != "" {
 				commitList = append(commitList, commit)
-				commit = RawCommit{}
+				commit = commits.RawCommit{}
 			}
 
 			commit.CommitHash = strings.Fields(s)[1]
@@ -89,7 +93,7 @@ func TokenizeGitLogs(options LogOptions) []RawCommit {
 	return commitList
 }
 
-func FlushCommits(rawCommits []RawCommit) {
+func FlushCommits(rawCommits []commits.RawCommit) {
 	var wg sync.WaitGroup
 	client := &http.Client{}
 	wg.Add(1)
@@ -97,9 +101,8 @@ func FlushCommits(rawCommits []RawCommit) {
 	wg.Wait()
 }
 
-func BulkPostCommit(client *http.Client, commits []RawCommit) {
+func BulkPostCommit(client *http.Client, commits []commits.RawCommit) {
 	b, err := json.Marshal(commits)
-	log.Println("json", b)
 
 	if err != nil {
 		log.Fatal(err)
@@ -126,7 +129,7 @@ func BulkPostCommit(client *http.Client, commits []RawCommit) {
 	log.Println(res.StatusCode)
 }
 
-func PostStats(stats []types.Stats) {
+func PostStats(stats []commits.Stats) {
 	b, err := json.Marshal(stats)
 	log.Println("json", b)
 

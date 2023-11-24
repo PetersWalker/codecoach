@@ -1,6 +1,6 @@
 # Feature Backlog
 
-1. Collect file type, date, commit hash, file types, and user as well.
+1. Collect file type, date, commit hash, file commits, and user as well.
 
     - Use `git log --numstat -1` to collect stats in a post commit hook instead of pre commit hook.  
 

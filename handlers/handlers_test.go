@@ -2,8 +2,7 @@ package handlers
 
 import (
 	"bytes"
-	"codecoach/db"
-	"codecoach/types"
+	"codecoach/commits"
 	"encoding/json"
 	"net/http"
 	"testing"
@@ -12,36 +11,14 @@ import (
 	"gotest.tools/v3/assert"
 )
 
-func TestSaveStats(t *testing.T) {
-
-	// setup
-	layout := "Mon Jan 02 15:04:05 2006 -0700"
-	time, _ := time.Parse(layout, "Thu Nov 16 14:44:17 2023 -0500")
-	stats := []types.Stats{
-		{
-			Filepath:        "cli/wrapper.go",
-			LinesAdded:      "12",
-			LinesSubtracted: "51",
-			Name:            "PetersWalker",
-			Date:            time,
-			CommitHash:      "c9fe1ef646916078b52540846e25b5a156e6eb39",
-		},
-	}
-
-	// action
-	result, err := recordStatsData(db.Client, stats)
-	assert.NilError(t, err)
-	assert.DeepEqual(t, result, stats)
-}
-
 func TestPostStat(t *testing.T) {
 	//setup
 	layout := "Mon Jan 02 15:04:05 2006 -0700"
 	time, _ := time.Parse(layout, "Thu Nov 16 14:44:17 2023 -0500")
-	json, _ := json.Marshal([]types.Stats{{
+	json, _ := json.Marshal([]commits.Stats{{
 		Filepath:        "cli/wrapper.go",
-		LinesAdded:      "12",
-		LinesSubtracted: "51",
+		LinesAdded:      12,
+		LinesSubtracted: 51,
 		Name:            "PetersWalker",
 		Date:            time,
 		CommitHash:      "c9fe1ef646916078b52540846e25b5a156e6eb39",
@@ -54,4 +31,51 @@ func TestPostStat(t *testing.T) {
 	res, _ := client.Do(req)
 	//assert
 	assert.DeepEqual(t, res.Status, "200 OK")
+}
+
+func TestCastToStats(t *testing.T) {
+	//setup
+	commit := commits.RawCommit{
+		CommitHash: "2528f600f73947495c7396a0d6d5ff2f1a4d343c",
+		Author:     "PetersWalker",
+		Date:       "1700690643",
+		Files: []commits.RawFile{
+			{
+				FilePath:   "cli/wrapper.go",
+				Added:      "0",
+				Subtracted: "1",
+			},
+			{
+				FilePath:   "cli/wrap.go",
+				Added:      "0",
+				Subtracted: "2",
+			},
+		},
+	}
+
+	date := time.Unix(int64(1700690643), 0)
+
+	desired := []commits.Stats{
+		{
+			Filepath:        "cli/wrapper.go",
+			LinesAdded:      0,
+			LinesSubtracted: 1,
+			Name:            "PetersWalker",
+			Date:            date,
+			CommitHash:      "2528f600f73947495c7396a0d6d5ff2f1a4d343c",
+		},
+		{
+			Filepath:        "cli/wrap.go",
+			LinesAdded:      0,
+			LinesSubtracted: 2,
+			Name:            "PetersWalker",
+			Date:            date,
+			CommitHash:      "2528f600f73947495c7396a0d6d5ff2f1a4d343c",
+		},
+	}
+
+	//action
+	result := castToStats(commit)
+
+	assert.DeepEqual(t, result, desired)
 }

@@ -8,7 +8,7 @@ import (
 
 	"gotest.tools/v3/assert"
 
-	"codecoach/types"
+	"codecoach/commits"
 )
 
 var data = `commit c9fe1ef646916078b52540846e25b5a156e6eb39 (HEAD -> main)
@@ -32,7 +32,7 @@ func TestParseCommit(t *testing.T) {
 	result := parseCommit(bytes)
 	layout := "Mon Jan 02 15:04:05 2006 -0700"
 	time, _ := time.Parse(layout, "Thu Nov 16 14:44:17 2023 -0500")
-	var expected = []types.Stats{
+	var expected = []commits.RawStats{
 		{
 			Filepath:        "cli/wrapper.go",
 			LinesAdded:      "12",
@@ -52,7 +52,7 @@ func TestParseCommit(t *testing.T) {
 	}
 
 	// assert
-	AssertEqualSlices[types.Stats](t, result, expected)
+	AssertEqualSlices[commits.RawStats](t, result, expected)
 
 }
 
@@ -67,7 +67,7 @@ func TestParseCommitSingleFileChange(t *testing.T) {
 	result := parseCommit(bytes)
 	layout := "Mon Jan 02 15:04:05 2006 -0700"
 	time, _ := time.Parse(layout, "Thu Nov 16 14:44:17 2023 -0500")
-	var expected = []types.Stats{
+	var expected = []commits.RawStats{
 		{
 			Filepath:        "cli/wrapper.go",
 			LinesAdded:      "12",
@@ -79,7 +79,7 @@ func TestParseCommitSingleFileChange(t *testing.T) {
 	}
 
 	// assert
-	AssertEqualSlices[types.Stats](t, result, expected)
+	AssertEqualSlices[commits.RawStats](t, result, expected)
 
 }
 
@@ -94,7 +94,7 @@ func TestParseCommitFileNameChange(t *testing.T) {
 	result := parseCommit(bytes)
 	layout := "Mon Jan 02 15:04:05 2006 -0700"
 	time, _ := time.Parse(layout, "Thu Nov 16 14:44:17 2023 -0500")
-	var expected = []types.Stats{
+	var expected = []commits.RawStats{
 		{
 			Filepath:        "{stats => cli/stats}/collect_commit_stats.go",
 			LinesAdded:      "2",
@@ -106,7 +106,7 @@ func TestParseCommitFileNameChange(t *testing.T) {
 	}
 
 	// assert
-	AssertEqualSlices[types.Stats](t, result, expected)
+	AssertEqualSlices[commits.RawStats](t, result, expected)
 
 }
 
