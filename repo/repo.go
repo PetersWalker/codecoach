@@ -3,9 +3,9 @@ package repo
 import (
 	"codecoach/commits"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"log"
+	"time"
 )
 
 func RecordStatsData(db *sql.DB, data []commits.Stats) ([]commits.Stats, error) {
@@ -39,7 +39,7 @@ func RecordStatsData(db *sql.DB, data []commits.Stats) ([]commits.Stats, error) 
 
 }
 
-func GetCommitData(db *sql.DB) (any, error) {
+func GetCommitData(db *sql.DB) ([]commits.Stats, error) {
 	query := `
 	select 
 		sum(lines_added), 
@@ -49,33 +49,30 @@ func GetCommitData(db *sql.DB) (any, error) {
 	from commit_stats 
 	group by date;
 	`
-
 	rows, err := db.Query(query)
 
-	var added int
-	var subtracted int
-	var hash string
-	var date string
-
-	type Counts struct {
-		Added      int
-		Subtracted int
-		Hash       string
-		Date       string
-	}
-
-	var data []Counts
+	var data []commits.Stats
 
 	for rows.Next() {
-		rows.Scan(&added, &subtracted, &hash, &date)
-		data = append(
-			data,
-			Counts{
-				Added:      added,
-				Subtracted: subtracted,
-				Hash:       hash,
-				Date:       date,
-			})
+		var s commits.Stats
+		var stringDate string
+		err := rows.Scan(&s.LinesAdded, &s.LinesSubtracted, &s.CommitHash, &stringDate)
+
+		if err != nil {
+			panic(err)
+		}
+
+		date, err := time.Parse(time.DateOnly, stringDate)
+		if err != nil {
+			panic(err)
+		}
+		s.Date = date
+
+		if err = rows.Err(); err != nil {
+			panic(err) // Error related to the iteration of rows
+		}
+
+		data = append(data, s)
 	}
 
 	if err != nil {
@@ -83,12 +80,5 @@ func GetCommitData(db *sql.DB) (any, error) {
 		return nil, err
 	}
 
-	result, err := json.Marshal(data)
-
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	return string(result), err
+	return data, err
 }

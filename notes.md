@@ -1,14 +1,15 @@
 # Feature Backlog
 
-1. Collect file type, date, commit hash, file commits, and user as well.
-
-    - Use `git log --numstat -1` to collect stats in a post commit hook instead of pre commit hook.  
+normalize returned data with zeros for dates without data
 
 #
 
-2.  Ui for displaying data
-    ueries on the 
+preserve color formatting and errors when executing git with the wrapper
 
 #
 
-3. preserve color formatting and errors when executing git with the wrapper
+parse repo name with the raw commit
+
+# Bug Backlog
+
+bulk handeler doesnt write a response

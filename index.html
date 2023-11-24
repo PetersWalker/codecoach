@@ -22,11 +22,13 @@
             const ctx = document.getElementById('myChart');
 
             const dates = data.map(row => row.Date)
+            console.log(dates)
 
             var reduced = [data[0]]
-            const added = data.map(row => row.Added)
-            const subtracted = data.map(row => row.Subtracted)
-            const cum = data.map(row => row.Added - row.Subtracted)
+            const added = data.map(row => row.LinesAdded)
+
+            const subtracted = data.map(row => row.LinesSubtracted)
+            const cum = data.map(row => row.LinesAdded - row.LinesSubtracted)
 
             new Chart(ctx, {
                 type: 'line',

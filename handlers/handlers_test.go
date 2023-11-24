@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"codecoach/commits"
+	"codecoach/utils"
 	"encoding/json"
 	"net/http"
 	"testing"
@@ -74,8 +75,22 @@ func TestCastToStats(t *testing.T) {
 		},
 	}
 
-	//action
+	//act
 	result := castToStats(commit)
 
 	assert.DeepEqual(t, result, desired)
+}
+
+func TestNomalizDates(t *testing.T) {
+	// setup
+	commitStats := utils.CommitStatsDenormalizedExample()
+
+	// act
+	result := normalizeDates(commitStats, 3)
+	desired := utils.CommitStatsNormalizedExample()
+
+	//assert
+
+	assert.DeepEqual(t, result, desired)
+
 }

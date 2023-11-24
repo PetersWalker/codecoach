@@ -13,6 +13,7 @@ import (
 	"codecoach/commits"
 	"codecoach/db"
 	"codecoach/repo"
+	"codecoach/utils"
 )
 
 func Healthhandler(w http.ResponseWriter, r *http.Request) {
@@ -115,7 +116,45 @@ func castToStats(commit commits.RawCommit) []commits.Stats {
 }
 
 func HandleHome(w http.ResponseWriter, r *http.Request) {
-	commitData, _ := repo.GetCommitData(db.Client)
+	days := r.URL.Query().Get("days")
+	commitStats, _ := repo.GetCommitData(db.Client)
+
+	numberofDays, err := strconv.Atoi(days)
+
+	if err != nil {
+		log.Panic("HandleHome: atoi conversion failed", err)
+	}
+
+	normalizedCommitStats := normalizeDates(commitStats, numberofDays)
+
+	result, err := json.Marshal(normalizedCommitStats)
+
+	if err != nil {
+		log.Println(err)
+	}
+
 	tmpl := template.Must(template.ParseFiles("index.html"))
-	tmpl.Execute(w, commitData)
+	tmpl.Execute(w, string(result))
+}
+
+func normalizeDates(commitStats []commits.Stats, days int) []commits.Stats {
+	var zeros []commits.Stats
+	var firstDate = commitStats[0].Date
+	var d = 0
+
+	for d < days {
+		zeros = append(zeros, utils.CommitStatNil(firstDate.AddDate(0, 0, d)))
+		d++
+	}
+
+	statsIndex := 0
+	for i, nilCommit := range zeros {
+		if nilCommit.Date.Day() == commitStats[statsIndex].Date.Day() {
+			zeros[i] = commitStats[statsIndex]
+			statsIndex++
+		}
+
+	}
+
+	return zeros
 }
