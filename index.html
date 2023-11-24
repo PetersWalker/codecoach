@@ -18,9 +18,10 @@
         </div>
         <script>
             const data = JSON.parse("{{ . }}")
+            console.log(data)
             const ctx = document.getElementById('myChart');
 
-            const dates = data.map(row => new Date(row.Date).toLocaleDateString())
+            const dates = data.map(row => row.Date)
 
             var reduced = [data[0]]
             const added = data.map(row => row.Added)
