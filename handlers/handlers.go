@@ -116,13 +116,22 @@ func castToStats(commit commits.RawCommit) []commits.Stats {
 }
 
 func HandleHome(w http.ResponseWriter, r *http.Request) {
+	//queryvars =  validator.validate(, )
 	days := r.URL.Query().Get("days")
 	commitStats, _ := repo.GetCommitData(db.Client)
 
-	numberofDays, err := strconv.Atoi(days)
+	// todo proper validation
+	if days == "" {
+		days = "7"
+	}
 
+	numberofDays, err := strconv.Atoi(days)
 	if err != nil {
-		log.Panic("HandleHome: atoi conversion failed", err)
+		log.Println("HandleHome: atoi conversion failed", err)
+		log.Println("test\n test")
+		w.Write([]byte("invalid parameter for query string: days"))
+		log.Panic(err)
+		return
 	}
 
 	normalizedCommitStats := normalizeDates(commitStats, numberofDays)
@@ -157,4 +166,11 @@ func normalizeDates(commitStats []commits.Stats, days int) []commits.Stats {
 	}
 
 	return zeros
+}
+
+type queryString struct {
+}
+
+func validate(r http.Request) {
+
 }

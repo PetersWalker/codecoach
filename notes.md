@@ -1,6 +1,16 @@
 # Feature Backlog
 
-normalize returned data with zeros for dates without data
+trailing window data display
+
+#
+
+trailing window math 
+    7 day average
+    30 day average
+
+#
+
+multi selector for stat which data
 
 #
 
