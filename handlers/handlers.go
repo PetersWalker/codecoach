@@ -118,7 +118,7 @@ func castToStats(commit commits.RawCommit) []commits.Stats {
 func HandleHome(w http.ResponseWriter, r *http.Request) {
 	//queryvars =  validator.validate(, )
 	days := r.URL.Query().Get("days")
-	commitStats, _ := repo.GetCommitData(db.Client)
+	commitStats, _ := repo.GetAllCommitData(db.Client)
 
 	// todo proper validation
 	if days == "" {
@@ -148,7 +148,7 @@ func HandleHome(w http.ResponseWriter, r *http.Request) {
 
 func normalizeDates(commitStats []commits.Stats, days int) []commits.Stats {
 	var zeros []commits.Stats
-	var firstDate = commitStats[0].Date
+	var firstDate = time.Now().AddDate(0, 0, -days)
 	var d = 0
 
 	for d < days {
@@ -158,6 +158,11 @@ func normalizeDates(commitStats []commits.Stats, days int) []commits.Stats {
 
 	statsIndex := 0
 	for i, nilCommit := range zeros {
+		if statsIndex == len(commitStats)-1 {
+			break
+		}
+		log.Println(nilCommit.Date.Day(), commitStats[statsIndex].Date.Day())
+
 		if nilCommit.Date.Day() == commitStats[statsIndex].Date.Day() {
 			zeros[i] = commitStats[statsIndex]
 			statsIndex++
@@ -168,9 +173,34 @@ func normalizeDates(commitStats []commits.Stats, days int) []commits.Stats {
 	return zeros
 }
 
-type queryString struct {
-}
+func GetChartHandler(w http.ResponseWriter, r *http.Request) {
+	//queryvars =  validator.validate(, )
+	window := r.URL.Query().Get("window")
 
-func validate(r http.Request) {
+	var numberOfDays int
+	if window == "week" {
+		numberOfDays = 7
+	}
 
+	if window == "month" {
+		numberOfDays = 30
+	}
+
+	if window == "year" {
+		numberOfDays = 365
+	}
+
+	var firstDate = time.Now().AddDate(0, 0, -numberOfDays)
+	commitStats, _ := repo.GetCommitDataAfterDate(db.Client, firstDate)
+
+	normalizedCommitStats := normalizeDates(commitStats, numberOfDays)
+
+	result, err := json.Marshal(normalizedCommitStats)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	tmpl := template.Must(template.ParseFiles("chart-script.html"))
+	tmpl.Execute(w, string(result))
 }

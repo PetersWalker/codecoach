@@ -39,7 +39,7 @@ func RecordStatsData(db *sql.DB, data []commits.Stats) ([]commits.Stats, error) 
 
 }
 
-func GetCommitData(db *sql.DB) ([]commits.Stats, error) {
+func GetAllCommitData(db *sql.DB) ([]commits.Stats, error) {
 	query := `
 	select 
 		sum(lines_added), 
@@ -59,6 +59,57 @@ func GetCommitData(db *sql.DB) ([]commits.Stats, error) {
 		var stringDate string
 		err := rows.Scan(&s.LinesAdded, &s.LinesSubtracted, &s.CommitHash, &stringDate)
 
+		if err != nil {
+			panic(err)
+		}
+
+		date, err := time.Parse(time.DateOnly, stringDate)
+		if err != nil {
+			panic(err)
+		}
+		s.Date = date
+
+		if err = rows.Err(); err != nil {
+			panic(err) // Error related to the iteration of rows
+		}
+
+		data = append(data, s)
+	}
+
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	return data, err
+}
+
+func GetCommitDataAfterDate(db *sql.DB, firstDate time.Time) ([]commits.Stats, error) {
+	query := fmt.Sprintf(`
+	select 
+		sum(lines_added), 
+		sum(lines_subtracted), 
+		commit_hash, 
+		date 
+	from commit_stats 
+	where date > '%s'
+	group by date;
+	`, firstDate.Format(time.DateOnly))
+
+	println(query)
+	rows, err := db.Query(query)
+
+	if err != nil {
+		panic(err)
+	}
+
+	var data []commits.Stats
+
+	for rows.Next() {
+
+		var s commits.Stats
+		var stringDate string
+		err := rows.Scan(&s.LinesAdded, &s.LinesSubtracted, &s.CommitHash, &stringDate)
 		if err != nil {
 			panic(err)
 		}

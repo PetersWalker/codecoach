@@ -1,0 +1,49 @@
+<div id="chart">
+    <canvas id="myChart"></canvas>
+    <script id="chart-script">
+        data = JSON.parse("{{ . }}")
+        console.log(data)
+        ctx = document.getElementById('myChart');
+
+        dates = data.map(row => row.Date)
+        console.log(dates)
+
+        reduced = [data[0]]
+        added = data.map(row => row.LinesAdded)
+
+        subtracted = data.map(row => row.LinesSubtracted)
+        cum = data.map(row => row.LinesAdded - row.LinesSubtracted)
+
+        new Chart(ctx, {
+            type: 'line',
+            responsive: true,
+            data: {
+                labels: dates,
+                datasets: [
+                    {
+                        label: 'lines added',
+                        data: added,
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'lines subtracted',
+                        data: subtracted,
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'cumulative',
+                        data: cum,
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</div>

@@ -2,8 +2,15 @@
 <html lang="en">
 
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma-rtl.min.css">
+    <!-- Styles -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/style.css" />
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.9"
+        integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX"
+        crossorigin="anonymous"></script>
+
     <title>Hello, World!</title>
 </head>
 
@@ -16,23 +23,13 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
         <!-- Primary -->
-        <details role="list">
-            <summary aria-haspopup="listbox" role="button">
-                metrics
-            </summary>
-            <ul role="listbox">
-                <li><a>Action</a></li>
-                <li><a>Another action</a></li>
-                <li><a>Something else here</a></li>
-            </ul>
-        </details>
-        <label for="window-select">window</label>
-        <select id="window-select">
-            <option value="last week">last week</option>
-            <option value="last month">last month</option>
-            <option value="last three months">last three months</option>
-            <option value="last year">last year</option>
+        <select name=window id="window-select" hx-get="/chart" hx-target="#chart" hx-swap="outerHTML">
+            <option value="week">last week</option>
+            <option value="month">last month</option>
+            <option value="year">last year</option>
         </select>
+
+        <div id="test"></div>
 
         <script>
             /* When the user clicks on the button, 
@@ -55,57 +52,56 @@
                 }
             }
         </script>
-
-        <div>
+        <div id="chart" hx-get="/chart?window=week" hx-trigger="load" class="">
             <canvas id="myChart"></canvas>
+            <script id="chart-script">
+                data = JSON.parse("{{ . }}")
+                console.log(data)
+                ctx = document.getElementById('myChart');
+
+                dates = data.map(row => row.Date)
+                console.log(dates)
+
+                reduced = [data[0]]
+                added = data.map(row => row.LinesAdded)
+
+                subtracted = data.map(row => row.LinesSubtracted)
+                cum = data.map(row => row.LinesAdded - row.LinesSubtracted)
+
+                new Chart(ctx, {
+                    type: 'line',
+                    responsive: true,
+                    data: {
+                        labels: dates,
+                        datasets: [
+                            {
+                                label: 'lines added',
+                                data: added,
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'lines subtracted',
+                                data: subtracted,
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'cumulative',
+                                data: cum,
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            </script>
         </div>
     </div>
-
-    <script>
-        const data = JSON.parse("{{ . }}")
-        console.log(data)
-        const ctx = document.getElementById('myChart');
-
-        const dates = data.map(row => row.Date)
-        console.log(dates)
-
-        var reduced = [data[0]]
-        const added = data.map(row => row.LinesAdded)
-
-        const subtracted = data.map(row => row.LinesSubtracted)
-        const cum = data.map(row => row.LinesAdded - row.LinesSubtracted)
-
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: dates,
-                datasets: [
-                    {
-                        label: 'lines added',
-                        data: added,
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'lines subtracted',
-                        data: subtracted,
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'cumulative',
-                        data: cum,
-                        borderWidth: 1
-                    }
-                ]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    </script>
     </div>
 </body>
 
