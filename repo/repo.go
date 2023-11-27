@@ -54,6 +54,7 @@ func GetCommitData(db *sql.DB) ([]commits.Stats, error) {
 	var data []commits.Stats
 
 	for rows.Next() {
+
 		var s commits.Stats
 		var stringDate string
 		err := rows.Scan(&s.LinesAdded, &s.LinesSubtracted, &s.CommitHash, &stringDate)
