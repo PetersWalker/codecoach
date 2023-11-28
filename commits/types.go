@@ -3,12 +3,12 @@ package commits
 import "time"
 
 type Stats struct {
-	Filepath        string
-	LinesAdded      int
-	LinesSubtracted int
-	Name            string
-	Date            time.Time
-	CommitHash      string
+	Filepath        string    `json:"filePath"`
+	LinesAdded      int       `json:"linesAdded"`
+	LinesSubtracted int       `json:"linesSubtracted"`
+	Name            string    `json:"name"`
+	Date            time.Time `json:"date"`
+	CommitHash      string    `json:"commitHash"`
 }
 
 type RawStats struct {

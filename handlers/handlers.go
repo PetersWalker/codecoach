@@ -204,7 +204,7 @@ func GetStatsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 	}
-	log.Printf("%v", result)
+	log.Printf("%v", string(result))
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	io.WriteString(w, string(result))
