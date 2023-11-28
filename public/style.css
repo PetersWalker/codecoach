@@ -9,12 +9,6 @@ body {
     background: #efefef;
 }
 
-.box {
-    background: white;
-    margin: 4rem;
-    padding: 2rem
-}
-
 #nav {
     height: 4rem;
     background: #262689;
@@ -28,5 +22,4 @@ body {
 #homelink {
     font-size: 2rem;
     margin-left: 1rem;
-
 }

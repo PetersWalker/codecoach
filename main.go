@@ -16,8 +16,8 @@ func main() {
 	http.HandleFunc("/health", handlers.Healthhandler)
 	http.HandleFunc("/postStats/bulk", handlers.PostCommitsBulk)
 	http.HandleFunc("/postStats", handlers.PostStatsHandler)
-	http.HandleFunc("/chart", handlers.GetChartHandler)
+	http.HandleFunc("/data", handlers.GetStatsHandler)
 
 	log.Fatal(http.ListenAndServe("localhost:8000", nil))
-	fmt.Println("listening on local:8000")
+	fmt.Println("listening on localhost:8000")
 }

@@ -96,7 +96,6 @@ func GetCommitDataAfterDate(db *sql.DB, firstDate time.Time) ([]commits.Stats, e
 	group by date;
 	`, firstDate.Format(time.DateOnly))
 
-	println(query)
 	rows, err := db.Query(query)
 
 	if err != nil {

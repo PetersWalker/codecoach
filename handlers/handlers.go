@@ -173,7 +173,7 @@ func normalizeDates(commitStats []commits.Stats, days int) []commits.Stats {
 	return zeros
 }
 
-func GetChartHandler(w http.ResponseWriter, r *http.Request) {
+func GetStatsHandler(w http.ResponseWriter, r *http.Request) {
 	//queryvars =  validator.validate(, )
 	window := r.URL.Query().Get("window")
 
@@ -190,6 +190,10 @@ func GetChartHandler(w http.ResponseWriter, r *http.Request) {
 		numberOfDays = 365
 	}
 
+	if window == "" {
+		numberOfDays = 7
+	}
+
 	var firstDate = time.Now().AddDate(0, 0, -numberOfDays)
 	commitStats, _ := repo.GetCommitDataAfterDate(db.Client, firstDate)
 
@@ -200,7 +204,8 @@ func GetChartHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 	}
+	log.Printf("%v", result)
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-	tmpl := template.Must(template.ParseFiles("chart-script.html"))
-	tmpl.Execute(w, string(result))
+	io.WriteString(w, string(result))
 }

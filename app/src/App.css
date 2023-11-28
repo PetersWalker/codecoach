@@ -1,0 +1,18 @@
+body {
+  background: #efefef;
+}
+
+#nav {
+  height: 4rem;
+  background: #262689;
+  color: white;
+  font-family: monospace;
+  display: flex;
+  align-items: center;
+
+}
+
+#homelink {
+  font-size: 2rem;
+  margin-left: 1rem;
+}
