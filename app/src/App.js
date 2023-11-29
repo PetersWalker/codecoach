@@ -4,10 +4,12 @@ import "./App.css";
 import { Chart } from './Chart';
 import { getData } from './client';
 
+
 const initialData = await getData()
 
 function App() {
   const [data, setData] = useState(initialData)
+  const [dataWindow, setDataWindow] = useState('week')
 
   async function getFreshData(value) {
     const data = await getData(value)
@@ -31,9 +33,12 @@ function App() {
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={"week"}
-                label="Age"
-                onChange={(e) => { getFreshData(e.target.value) }}
+                value={dataWindow}
+                label="Data window"
+                onChange={(e) => {
+                  getFreshData(e.target.value)
+                  setDataWindow(e.target.value)
+                }}
               >
                 <MenuItem value={"week"}>week</MenuItem>
                 <MenuItem value={"month"}>month</MenuItem>
