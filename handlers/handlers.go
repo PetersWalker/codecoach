@@ -134,7 +134,8 @@ func HandleHome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	normalizedCommitStats := normalizeDates(commitStats, numberofDays)
+	var firstDate = time.Now().AddDate(0, 0, -numberofDays)
+	normalizedCommitStats := normalizeDates(commitStats, numberofDays, firstDate)
 
 	result, err := json.Marshal(normalizedCommitStats)
 
@@ -146,9 +147,8 @@ func HandleHome(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, string(result))
 }
 
-func normalizeDates(commitStats []commits.Stats, days int) []commits.Stats {
+func normalizeDates(commitStats []commits.Stats, days int, firstDate time.Time) []commits.Stats {
 	var zeros []commits.Stats
-	var firstDate = time.Now().AddDate(0, 0, -days)
 	var d = 0
 
 	for d < days {
@@ -158,9 +158,10 @@ func normalizeDates(commitStats []commits.Stats, days int) []commits.Stats {
 
 	statsIndex := 0
 	for i, nilCommit := range zeros {
-		if statsIndex == len(commitStats)-1 {
+		if statsIndex == len(commitStats) {
 			break
 		}
+
 		log.Println(nilCommit.Date.Day(), commitStats[statsIndex].Date.Day())
 
 		if nilCommit.Date.Day() == commitStats[statsIndex].Date.Day() {
@@ -197,7 +198,7 @@ func GetStatsHandler(w http.ResponseWriter, r *http.Request) {
 	var firstDate = time.Now().AddDate(0, 0, -numberOfDays)
 	commitStats, _ := repo.GetCommitDataAfterDate(db.Client, firstDate)
 
-	normalizedCommitStats := normalizeDates(commitStats, numberOfDays)
+	normalizedCommitStats := normalizeDates(commitStats, numberOfDays, firstDate)
 
 	result, err := json.Marshal(normalizedCommitStats)
 

@@ -83,11 +83,13 @@ func TestCastToStats(t *testing.T) {
 
 func TestNomalizDates(t *testing.T) {
 	// setup
-	commitStats := utils.CommitStatsDenormalizedExample()
+	var firstDate = time.Now().AddDate(0, 0, -3)
+	commitStats := utils.CommitStatsDenormalizedExample(firstDate)
 
 	// act
-	result := normalizeDates(commitStats, 3)
-	desired := utils.CommitStatsNormalizedExample()
+
+	result := normalizeDates(commitStats, 3, firstDate)
+	desired := utils.CommitStatsNormalizedExample(firstDate)
 
 	//assert
 

@@ -5,18 +5,16 @@ import (
 	"time"
 )
 
-var today = time.Now()
-var yesterday = today.AddDate(0, 0, -1)
-var twoDaysAgo = today.AddDate(0, 0, -2)
+func CommitStatsDenormalizedExample(firstDate time.Time) []commits.Stats {
 
-func CommitStatsDenormalizedExample() []commits.Stats {
+	var twoFromNow = firstDate.AddDate(0, 0, 2)
 	return []commits.Stats{
 		{
 			Filepath:        "cli/wrap.go",
 			LinesAdded:      0,
 			LinesSubtracted: 2,
 			Name:            "PetersWalker",
-			Date:            twoDaysAgo,
+			Date:            firstDate,
 			CommitHash:      "2528f600f73947495c7396a0d6d5ff2f1a4d343c",
 		},
 		{
@@ -24,20 +22,23 @@ func CommitStatsDenormalizedExample() []commits.Stats {
 			LinesAdded:      0,
 			LinesSubtracted: 1,
 			Name:            "PetersWalker",
-			Date:            today,
+			Date:            twoFromNow,
 			CommitHash:      "2528f600f73947495c7396a0d6d5ff2f1a4d343c",
 		},
 	}
 }
 
-func CommitStatsNormalizedExample() []commits.Stats {
+func CommitStatsNormalizedExample(firstDate time.Time) []commits.Stats {
+	var tomorrow = firstDate.AddDate(0, 0, 1)
+	var twoFromNow = firstDate.AddDate(0, 0, 2)
+
 	return []commits.Stats{
 		{
 			Filepath:        "cli/wrap.go",
 			LinesAdded:      0,
 			LinesSubtracted: 2,
 			Name:            "PetersWalker",
-			Date:            twoDaysAgo,
+			Date:            firstDate,
 			CommitHash:      "2528f600f73947495c7396a0d6d5ff2f1a4d343c",
 		},
 		{
@@ -45,7 +46,7 @@ func CommitStatsNormalizedExample() []commits.Stats {
 			LinesAdded:      0,
 			LinesSubtracted: 0,
 			Name:            "",
-			Date:            yesterday,
+			Date:            tomorrow,
 			CommitHash:      "",
 		},
 		{
@@ -53,7 +54,7 @@ func CommitStatsNormalizedExample() []commits.Stats {
 			LinesAdded:      0,
 			LinesSubtracted: 1,
 			Name:            "PetersWalker",
-			Date:            today,
+			Date:            twoFromNow,
 			CommitHash:      "2528f600f73947495c7396a0d6d5ff2f1a4d343c",
 		},
 	}
