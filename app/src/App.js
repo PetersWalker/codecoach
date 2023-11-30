@@ -29,7 +29,7 @@ function App() {
 
           <Box sx={{ minWidth: 120, marginBottom: 8, marginLeft: 8 }}>
             <FormControl sx={{ minWidth: 120 }}>
-              <InputLabel id="demo-simple-select-label">Age</InputLabel>
+              <InputLabel id="demo-simple-select-label">Date Window</InputLabel>
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
