@@ -157,18 +157,19 @@ func normalizeDates(commitStats []commits.Stats, days int, firstDate time.Time) 
 	}
 
 	statsIndex := 0
+
 	for i, nilCommit := range zeros {
 		if statsIndex == len(commitStats) {
 			break
 		}
 
-		log.Println(nilCommit.Date.Day(), commitStats[statsIndex].Date.Day())
+		nilDate := nilCommit.Date
+		commitDate := commitStats[statsIndex].Date
 
-		if nilCommit.Date.Day() == commitStats[statsIndex].Date.Day() {
+		if (nilDate.Day() == commitDate.Day()) && (nilDate.Month() == commitDate.Month()) && (nilDate.Year() == commitDate.Year()) {
 			zeros[i] = commitStats[statsIndex]
 			statsIndex++
 		}
-
 	}
 
 	return zeros
@@ -177,8 +178,8 @@ func normalizeDates(commitStats []commits.Stats, days int, firstDate time.Time) 
 func GetStatsHandler(w http.ResponseWriter, r *http.Request) {
 	//queryvars =  validator.validate(, )
 	window := r.URL.Query().Get("window")
-
 	var numberOfDays int
+
 	if window == "week" {
 		numberOfDays = 7
 	}
@@ -197,15 +198,13 @@ func GetStatsHandler(w http.ResponseWriter, r *http.Request) {
 
 	var firstDate = time.Now().AddDate(0, 0, -numberOfDays)
 	commitStats, _ := repo.GetCommitDataAfterDate(db.Client, firstDate)
-
 	normalizedCommitStats := normalizeDates(commitStats, numberOfDays, firstDate)
-
 	result, err := json.Marshal(normalizedCommitStats)
 
 	if err != nil {
 		log.Println(err)
 	}
-	log.Printf("%v", string(result))
+
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	io.WriteString(w, string(result))
